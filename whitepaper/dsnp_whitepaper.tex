@@ -26,16 +26,6 @@
 
 \urlstyle{same}
 
-% Produces a footnote without any marker in the body text and without
-% any number at the footnote itself.  Thanks to Grieving Gentoo in
-% www.codegrepper.com/code-examples/whatever/footnote+without+number+latex
-\newcommand\standalonefootnote[1]{%
-  \begingroup
-  \renewcommand\thefootnote{}\footnote{#1}%
-  \addtocounter{footnote}{-1}%
-  \endgroup
-}
-
 \title{Decentralized Social Networking Protocol (DSNP)}
 \author{
 	Project Liberty\\
@@ -48,10 +38,6 @@
 
 \maketitle
 
-\standalonefootnote{\copyright\, 2020 Liberty 3.0 LLC.\\
-  Published under a Creative Commons Attribution-ShareAlike 4.0 License.\\
-  See \textit{https://creativecommons.org/licenses/by-sa/4.0/} for details.}
-
 \begin{abstract}
 	A decentralized social networking protocol (DSNP) will allow users to own and control
 	their social graph, while avoiding the balkanization of the current social network
@@ -62,6 +48,15 @@
 	authenticity, portability, usability, and extensibility are addressed for each element.
 	This paper will be followed by a protocol specification document.
 \end{abstract}
+
+\vfill
+\copyright\, 2020 UnfinishedLabs LLC.\\
+Published under a Creative Commons Attribution-ShareAlike 4.0 License.\\
+See \textit{https://creativecommons.org/licenses/by-sa/4.0/} for details.
+
+% Remove the page number from the title page and start numbering at 1 on the second page
+\thispagestyle{empty}
+\clearpage
 
 \raggedright
 

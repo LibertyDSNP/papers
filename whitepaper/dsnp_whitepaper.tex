@@ -53,7 +53,7 @@ November 2023}
 \end{abstract}
 
 \vfill
-\copyright\, 2020 UnfinishedLabs LLC; \copyright\, 2023 Amplica Labs, LLC.\\
+\copyright\, 2020-2023 Project Liberty\\
 Published under a Creative Commons Attribution-ShareAlike 4.0 License.\\
 See \textit{https://creativecommons.org/licenses/by-sa/4.0/} for details.
 
@@ -71,7 +71,7 @@ continued to evolve rapidly, benefiting from both an increase in public interest
 enthusiasm from the worldwide academic and development communities. There has been a
 corresponding, and welcome, shift away from a seemingly single-minded focus on
 cryptocurrency and financialization toward a more nuanced idea of a world of decentralized
-identity and decentralized applications (dApps), and while some discussion of economic
+identity and decentralized applications (dApps). While some discussion of economic
 incentives is unavoidable, and indeed important, for consensus systems to endure and thrive,
 this shift has helped to create a technological environment where the benefits of
 decentralization and consensus-based state management have been recognized as extending far
@@ -79,7 +79,7 @@ beyond purely financial applications. This in turn has helped to usher in new la
 allows us to speak about such systems in more inclusive terms: whereas the first edition of
 this paper referenced the well known blockchain smart contract paradigm specifically, we
 can, with the benefit of time and hindsight, address the protocol more generally in terms of
-consensus systems, shared state, and the invocaton of operations and resulting state change
+consensus systems, shared state, and the invocation of operations and resulting state change
 records on these systems.
 
 In preparing this second edition, we have tried to avoid radical alterations to the original
@@ -93,7 +93,9 @@ provided footnotes to address the current state of protocol evolution and diverg
 the initial proposal (such as the change from incremental Graph Change Events to bulk
 changes via a User Data management paradigm) but have kept the historical text as intact as
 possible, as in almost all cases the same concepts still apply, even if implementation
-strategies have changed.
+strategies have changed. Finally, we have moved the section on Batch Announcements from the
+appendix to be its own core section. This reflects its importance for implementing DSNP
+systems that are economically viable and highly scalable.
 
 \clearpage
 \section{Introduction}\label{sec:introduction}
@@ -290,13 +292,13 @@ community.  This avoids the case of an outside party having unilateral rights to
 behavior of the system without the user's consent. An outside party in possession of
 unilateral access rights would be equivalent to the status quo, meaning that existing social
 network providers have the power to revoke user account access. For a Social Identity, no
-third party has this capability.
+third party has this capability, within the constraints of the consensus system it is built on.
 
 Our \say{design by contract} approach provides another extension to ownership: complete
 implementation change. Although we expect most users to use the same implementation, other
 implementations may arise to cover unique use cases since the protocol is designed to be
 interface first. We imagine that businesses and marketing groups, for example, may desire to
-control a Social Identity using a different set of rules than the default implementation.
+control a Social Identity using a different implementation strategy.
 
 \subsubsection{Rights Delegation}
 
@@ -351,8 +353,8 @@ identity that they inhabit on social media. Users can attach claims and metadata
 Social Identity. The most common metadata used on social media are display name and avatar,
 but can extend to claims about the user's real-world identity, such as name, age, or
 professional certifications. By using this mechanism, services may be created that verify a
-user's real identity, similar to X's verified accounts, except open for all to use rather
-than only those who X has \say{determined to be an account of public
+user's real identity, similar to Twitter's verified accounts, except open for all to use rather
+than only those who Twitter has \say{determined to be an account of public
   interest.}\cite{twitter_verified_accounts}
 
 \subsection{Portability}\label{sec:portability}
@@ -394,9 +396,9 @@ private relationships allow user control over who can view them.
 
 Users, represented by Social Identities, are the vertices in the social graph, and
 relationships are the edges. These relationships can be directed, such as in a Follow
-relationship, or undirected, such as in a Friend relationship. X (formerly Twitter) is an
+relationship, or undirected, such as in a Friend relationship. Twitter is an
 example of the directed Follow model. A public Follow relationship is created by the
-follower, but it does not require the permission of the followed.\footnote{X allows for
+follower, but it does not require the permission of the followed.\footnote{Twitter allows for
   various tweaks to this simplistic model; blocking and privacy options, for example.} The
 reciprocal relationship can also exist, but it is not required. The follower controls both
 the formation and removal of the relationship. Facebook and LinkedIn are examples of
@@ -460,7 +462,10 @@ type public also have unencrypted \say{Object} and \say{Action} values. Graph Ch
 of type private encrypt the values for \say{Object} and Action. This means that, despite the
 Graph Change Event being published to the consensus system, a key is required to interpret
 the encrypted values. A user generates a symmetric encryption key for encrypting the private
-Graph Change Events data. The user can store this encryption key in their wallet or on chain
+Graph Change Events data.\footnote{The specification now utilizes asymmetric key pairs to
+  generate one-off symmetric keys via a key agreement algorithm. This provides improved
+  security and allows for additional use cases while minimizing key management overhead.}
+The user can store this encryption key in their wallet or on chain
 (see the \say{Key Storage} section).  While private Graph Change Events do not allow outside
 observers to read who is being followed, it is still possible to see that the Social
 Identity expressed in the Actor field is actively publishing a particular type of event,
@@ -820,6 +825,63 @@ value of positive, neutral, or negative, as well as a suggested rendering. The s
 allows for simple cross-client display of reactions, while a suggested rendering can be used
 to expand the range of emotion for supporting clients.
 
+	\section{Batch Message Announcements}\label{app:batch_message_announcements}
+
+	A Batch Announcement is an extension of the Broadcast Announcement, and has the same
+        set of data. It exists to allow the \say{batching} of all Announcement Message
+        Types. Batch Announcements allow the publication of more than one message
+        Announcement with a single on-chain Announcement.  These Batch Messages introduce a
+        new service role called a Batch Announcer, which collects message Announcements and
+        batches them together. They have some trade-offs versus other Message Types, but
+        allow substantial scaling increases and cost reductions.
+
+	\begin{figure}[h]
+		\includegraphics[width=\linewidth]{figures/Batch Message Structure.png}
+		\caption{Batch Message Structure}
+		\label{fig:9}
+	\end{figure}
+
+	A Batch Announcement has a different Message Type than a Broadcast Announcement, but
+        otherwise has the same structure. However, the URI for a Batch Announcement always
+        refers to a Batch Message file, the content of which has a specific file format, and
+        is an ordered list of other Announcements. Each of the included Announcements has
+        its complete set of Announcement metadata, including Message Type, Social Identity
+        source, content URI, content Hash, and any type-specific Metadata (for example, a
+        Reply Announcement would also have a referent message ID).  Each Announcement also
+        contains the Social Identity address of the sender and a signature of the URI
+        content, replacing the signature that would have been used when posting to the
+        consensus system. The Announcements included in the Batch Message file are not
+        broadcast directly to the consensus system. However, since each message in the Batch
+        Message file has a Hash, Social Identity, and signature, and the Batch Announcement
+        has a Hash of the Batch Message file, authenticity still traces from each individual
+        user message back to the chain, using techniques such as EIP -1271,\cite{eip1271}
+        BLS12-377,\cite{el2020} or other similar approaches.
+
+	\begin{figure}
+		\includegraphics[width=\linewidth]{figures/Example Batch Process.png}
+		\caption{Example Batch Process}
+		\label{fig:10}
+	\end{figure}
+
+	This approach has a number of trade-offs. Benefits include lower cost and better
+        scaling while maintaining authenticity. Drawbacks include increased complexity and
+        the off-chain nature of messages referenced by Batch Messages. Increased complexity
+        comes from the additional indirection used by Batch Messages. However, as volume
+        increases, most clients will use dedicated content indexing services, which should
+        have no issue with indexing Batch Messages. Potential latency comes from Batch
+        Announcers only periodically posting Batch Announcements. The off-ledger nature of
+        referenced messages can be mitigated by Indexers and other consensus system watchers
+        replicating or caching Batch Message files.  While a file can be removed, the
+        existence of the Batch Message is listed on the chain, providing evidence that a
+        file previously existed and allowing any file copy to be verified for authenticity
+        against the listed Hash.
+
+	Batch Messages are another example of the flexibility and extensibility of the
+        protocol, enabling implementation on cost-sensitive consensus systems including
+        sidechain or other Layer 2 blockchain solutions.  Users have the option to publish
+        Announcements directly or through an Announcement service. Batch Announcements work
+        in cooperation with, not as a replacement for, other Message Types, while providing
+        orders-of-magnitude scaling increases and cost reductions.
 
 \section{Conclusion}\label{sec:conclusion}
 
@@ -899,71 +961,5 @@ protocol allows for an entire ecosystem of participants to innovate and flourish
 \nocite{williams2019}
 
 \printbibliography
-
-
-\clearpage
-
-\begin{appendices}
-
-
-	\section{Batch Message Announcements}\label{app:batch_message_announcements}
-
-	A Batch Announcement is an extension of the Broadcast Announcement, and has the same
-        set of data. It exists to allow the \say{batching} of all Announcement Message
-        Types. Batch Announcements allow the publication of more than one message
-        Announcement with a single on-chain Announcement.  These Batch Messages introduce a
-        new service role called a Batch Announcer, which collects message Announcements and
-        batches them together. They have some trade-offs versus other Message Types, but
-        allow substantial scaling increases and cost reductions.
-
-	\begin{figure}[h]
-		\includegraphics[width=\linewidth]{figures/Batch Message Structure.png}
-		\caption{Batch Message Structure}
-		\label{fig:9}
-	\end{figure}
-
-	A Batch Announcement has a different Message Type than a Broadcast Announcement, but
-        otherwise has the same structure. However, the URI for a Batch Announcement always
-        refers to a Batch Message file, the content of which has a specific file format, and
-        is an ordered list of other Announcements. Each of the included Announcements has
-        its complete set of Announcement metadata, including Message Type, Social Identity
-        source, content URI, content Hash, and any type-specific Metadata (for example, a
-        Reply Announcement would also have a referent message ID).  Each Announcement also
-        contains the Social Identity address of the sender and a signature of the URI
-        content, replacing the signature that would have been used when posting to the
-        consensus system. The Announcements included in the Batch Message file are not
-        broadcast directly to the consensus system. However, since each message in the Batch
-        Message file has a Hash, Social Identity, and signature, and the Batch Announcement
-        has a Hash of the Batch Message file, authenticity still traces from each individual
-        user message back to the chain, using techniques such as EIP -1271,\cite{eip1271}
-        BLS12-377,\cite{el2020} or other similar approaches.
-
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figures/Example Batch Process.png}
-		\caption{Example Batch Process}
-		\label{fig:10}
-	\end{figure}
-
-	This approach has a number of trade-offs. Benefits include lower cost and better
-        scaling while maintaining authenticity. Drawbacks include increased complexity and
-        the off-chain nature of messages referenced by Batch Messages. Increased complexity
-        comes from the additional indirection used by Batch Messages. However, as volume
-        increases, most clients will use dedicated content indexing services, which should
-        have no issue with indexing Batch Messages. Potential latency comes from Batch
-        Announcers only periodically posting Batch Announcements. The off-ledger nature of
-        referenced messages can be mitigated by Indexers and other consensus system watchers
-        replicating or caching Batch Message files.  While a file can be removed, the
-        existence of the Batch Message is listed on the chain, providing evidence that a
-        file previously existed and allowing any file copy to be verified for authenticity
-        against the listed Hash.
-
-	Batch Messages are another example of the flexibility and extensibility of the
-        protocol, enabling implementation on cost-sensitive consensus systems including
-        sidechain or other Layer 2 blockchain solutions.  Users have the option to publish
-        Announcements directly or through an Announcement service. Batch Announcements work
-        in cooperation with, not as a replacement for, other Message Types, while providing
-        orders-of-magnitude scaling increases and cost reductions.
-
-\end{appendices}
 
 \end{document}

@@ -42,14 +42,15 @@ November 2023}
 \maketitle
 
 \begin{abstract}
-	The decentralized social networking protocol (DSNP) allows users to own and control
-	their social graph, while avoiding the balkanization of the current social network
-	providers and creating an open ecosystem of network participants. We propose a protocol
+	The decentralized social networking protocol (DSNP) allows users to interact via a global,
+	open, decentralized social graph, giving them control of their identities and personal data
+	while avoiding the balkanization of the current social network
+	platforms and creating an open ecosystem of network participants. We propose a protocol
 	for writing and reading social network data on public consensus systems.
 	This protocol defines how identity, social graph, and messaging elements are represented
-	to create a decentralized social network. Applicable aspects of ownership, privacy,
+	to create a decentralized social network. Applicable aspects of control, privacy,
 	authenticity, portability, usability, and extensibility are addressed for each element.
-	This paper is accompanied by a protocol specification document.
+	This paper is accompanied by a protocol specification document.\footnote{https://spec.dsnp.org}
 \end{abstract}
 
 \vfill
@@ -127,7 +128,6 @@ the large companies that control the largest social graphs. Malicious actors exp
 algorithms by deploying bots, artificial profiles, and divisive content to manipulate users
 at scale.
 
-
 What is needed is a universally accessible, unified, and decentralized social graph that
 allows developers to build an ecosystem with a variety of applications. By decoupling
 applications and data, this ecosystem will allow for a wide range of personalization
@@ -164,7 +164,7 @@ which facilitates communication between the users based on their social graph co
 
 	\begin{description}
 		\tightlist
-		\item[Ownership:]
+		\item[Agency:]
 		      Who owns and controls the data?
 		\item[Privacy:]
 		      How and when is data private, and how is that privacy managed?
@@ -185,7 +185,9 @@ limitations or explicit choices. Vertically integrated products inherently strug
 portability, and many choose not to enforce privacy or ownership standards. Federated
 protocols, with their dependence on shared servers, generally can't provide strong user data
 ownership guarantees. Existing decentralized networks have limited privacy and private
-communication capabilities and struggle with usability. We believe the optimal approach to
+communication capabilities and struggle with usability, often coupling the ability to exercise
+core social functionality with transaction fees denominated in a specific cryptocurrency token.
+We believe the optimal approach to
 address these six core aspects is a protocol that leverages an existing public consensus
 system as a neutral, decentralized platform for data and communications, while defining a
 standard format for data interaction and employing strong encryption for privacy, allowing
@@ -227,7 +229,7 @@ curated topics, or tag-based discovery.
 
 Combined, these elements represent an unbundling of social networks as they currently
 exist, and create a unified, universally accessible, and decentralized ecosystem for
-social graphs.
+social activity at global scale.
 
 \section{Identity}\label{sec:identity}
 
@@ -255,20 +257,20 @@ to a separate uncorrelated control key and stored in a user's digital wallet.
 	\label{fig:1}
 \end{figure}
 
-\subsection{User Ownership and Delegation}\label{sec:user_ownership and_delegation}
+\subsection{User Agency and Delegation}\label{sec:user_ownership and_delegation}
 
 With most existing social networks, a user's access to their account can be suspended or
 revoked unilaterally by the site owner, based on any number of actual or perceived
 behaviors, resulting in the user's loss of access to their personal data and social graph.
 Even though the user populated their account with data and social connections, the site
 usually owns the account that the user created. A key goal of the protocol is for users to
-own their data. Three techniques are used to ensure that people own their Social Identity:
-direct data ownership, rights delegation, and identity verification.
+control and have agency over their data. Three techniques are used to ensure that people control
+their Social Identity: direct data control, rights delegation, and identity verification.
 
-\subsubsection{Direct Data Ownership}
+\subsubsection{Direct Data Control}
 
 Many blockchain-based projects that employ smart contracts use a single contract instance to
-store multiple user ownership rights. While this approach works for simple use cases, such
+store multiple user's rights. While this approach works for simple use cases, such
 as nonupgradable smart contracts associating ERC-20\cite{erc20} token values with unique
 addresses, storing multiple users' data in a single smart contract means someone other than
 each user has the right to upgrade the common contract. Whoever has upgrade rights
@@ -282,7 +284,7 @@ data it stores.\footnote{The first edition of this paper argued for giving users
   may be implemented using a variety of approaches.} Instead, the protocol guarantees that
 each user's control key retains sole control of their personal data and social graph.
 
-One major ramification of direct ownership is that the user should always have agency in the
+One major ramification of direct control is that the user should always have agency in the
 adoption of new system logic (for example, smart contract upgrades or blockchain core logic
 upgrades). At minimum, users require the ability to opt out of their association with a
 given consensus system. Ideally, consensus systems will enable democratic participation in
@@ -294,11 +296,10 @@ unilateral access rights would be equivalent to the status quo, meaning that exi
 network providers have the power to revoke user account access. For a Social Identity, no
 third party has this capability, within the constraints of the consensus system it is built on.
 
-Our \say{design by contract} approach provides another extension to ownership: complete
+The \say{design by contract} approach provides another extension to control: complete
 implementation change. Although we expect most users to use the same implementation, other
 implementations may arise to cover unique use cases since the protocol is designed to be
-interface first. We imagine that businesses and marketing groups, for example, may desire to
-control a Social Identity using a different implementation strategy.
+interface first.
 
 \subsubsection{Rights Delegation}
 
@@ -307,7 +308,7 @@ behalf. This ability is accomplished by creating a system to delegate trust usin
 control key as owner and sole authority to grant new permissions. All granted permissions
 can be revoked in the same fashion. Both actions are simply protocol operations.
 
-The delegation of rights never removes the user's ownership of their Social Identity. When
+The delegation of rights never removes the user's agency over their Social Identity. When
 delegating rights, it is also possible to limit third-party access to specific actions.
 Though third-party \say{bad actors} who receive rights may be able to take actions on the
 user's behalf until access is revoked, they cannot escalate their actions to ownership
@@ -329,7 +330,7 @@ users to own any cryptocurrency to create or use a Social Identity.
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{figures/Cost Shifting.png}
-	\caption{Cost Shifting}
+	\caption{Cost Shifting Example}
 	\label{fig:2}
 \end{figure}
 
@@ -344,13 +345,14 @@ intended action.
 Each action on the consensus system taken by an authorized third party can be traced back to
 the delegate, verifying the identity of the invoker. Delegates who engage in unauthorized
 activity can be identified and their permissions revoked. Actions previously taken by the
-abusing party can be refuted by the owner.
+abusing party can be refuted by the user.
 
 \subsection{Attributes}\label{sec:attributes}
 
 People using social media often choose to expose parts of their identity, or at least the
 identity that they inhabit on social media. Users can attach claims and metadata to their
-Social Identity. The most common metadata used on social media are display name and avatar,
+Social Identity. A set of attributes attached to an identity is often created as a profile:
+the most common metadata used on social media are display name and avatar,
 but can extend to claims about the user's real-world identity, such as name, age, or
 professional certifications. By using this mechanism, services may be created that verify a
 user's real identity, similar to Twitter's verified accounts, except open for all to use rather
@@ -359,7 +361,7 @@ than only those who Twitter has \say{determined to be an account of public
 
 \subsection{Portability}\label{sec:portability}
 
-When users own their data and it is stored on the consensus system, portability manifests
+When users control their data and it is stored on the consensus system, portability manifests
 differently than the traditional export/import paradigm. Data is shared with services
 instead of stored in services. People can use more than one service at a time while
 continuing to synchronize data between services. While public data is readable by anyone,
@@ -542,7 +544,7 @@ key components are needed:
 		\item[Announcement:]
 		      A structure representing that a message exists
 		\item[Announcement Metadata:]
-		      Key metadata embedded in a announcement allowing
+		      Key metadata embedded in an announcement allowing
 		      message verification and simple correlation of related messages
 		\item[Content:]
 		      Detailed data containing the message text, additional metadata, and media links
@@ -607,11 +609,11 @@ additional use cases. The four key attributes are:
 		\item
 		      What type of message is this?
 		\item
-		      Did the author really send this message?
+		      Who sent this message?
 		\item
 		      Where is the content located?
 		\item
-		      How is content authenticated?
+		      Is the content I am seeing exactly what was originally sent?
 	\end{enumerate}
 \end{samepage}
 
@@ -626,7 +628,7 @@ a different event. The simplest is a Broadcast message, which has only the four 
 attributes already identified for an Announcement. Message Types may define additional
 attributes needed for their specific use case.
 
-\subsubsection{Did the author really send this message?}
+\subsubsection{Who sent this message?}
 
 As described in the section on Social Identity, the user has the ability to authorize third
 parties to take actions on their behalf via the protocol. This means that a valid message
@@ -652,7 +654,7 @@ direct access to the referenced content, but any other protocol that is generall
 may be substituted. Examples include Swarm or IPFS, with the caveat that protocols not
 supported by a recipient's user agent may limit interoperability.
 
-\subsubsection{How is content authenticated?}
+\subsubsection{Is the content I am seeing exactly what was originally sent?}
 
 The Announcement contains a Hash of the content referenced by the content URI. When the
 content is retrieved, the retrieved content can be hashed using the same algorithm and
@@ -705,7 +707,7 @@ a message. Four key Message Types are defined here, though additional types may 
 A Broadcast message is an Announcement with no recipient. Users primarily discover these
 messages by following the author and monitoring for messages with the author as the
 sender. Such messages may also be aggregated into public feeds and presented by
-recommendation algorithms. This form of message is analogous to public Twitter posts.
+recommendation algorithms. This form of message is analogous to public social media posts.
 
 \subsubsection{Reply}
 
@@ -825,63 +827,63 @@ value of positive, neutral, or negative, as well as a suggested rendering. The s
 allows for simple cross-client display of reactions, while a suggested rendering can be used
 to expand the range of emotion for supporting clients.
 
-	\section{Batch Message Announcements}\label{app:batch_message_announcements}
+\section{Batch Message Announcements}\label{app:batch_message_announcements}
 
-	A Batch Announcement is an extension of the Broadcast Announcement, and has the same
-        set of data. It exists to allow the \say{batching} of all Announcement Message
-        Types. Batch Announcements allow the publication of more than one message
-        Announcement with a single on-chain Announcement.  These Batch Messages introduce a
-        new service role called a Batch Announcer, which collects message Announcements and
-        batches them together. They have some trade-offs versus other Message Types, but
-        allow substantial scaling increases and cost reductions.
+A Batch Announcement is an extension of the Broadcast Announcement, and has the same
+set of data. It exists to allow the \say{batching} of all Announcement Message
+Types. Batch Announcements allow the publication of more than one message
+Announcement with a single on-chain Announcement.  These Batch Messages introduce a
+new service role called a Batch Announcer, which collects message Announcements and
+batches them together. They have some trade-offs versus other Message Types, but
+allow substantial scaling increases and cost reductions.
 
-	\begin{figure}[h]
-		\includegraphics[width=\linewidth]{figures/Batch Message Structure.png}
-		\caption{Batch Message Structure}
-		\label{fig:9}
-	\end{figure}
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{figures/Batch Message Structure.png}
+	\caption{Batch Message Structure}
+	\label{fig:9}
+\end{figure}
 
-	A Batch Announcement has a different Message Type than a Broadcast Announcement, but
-        otherwise has the same structure. However, the URI for a Batch Announcement always
-        refers to a Batch Message file, the content of which has a specific file format, and
-        is an ordered list of other Announcements. Each of the included Announcements has
-        its complete set of Announcement metadata, including Message Type, Social Identity
-        source, content URI, content Hash, and any type-specific Metadata (for example, a
-        Reply Announcement would also have a referent message ID).  Each Announcement also
-        contains the Social Identity address of the sender and a signature of the URI
-        content, replacing the signature that would have been used when posting to the
-        consensus system. The Announcements included in the Batch Message file are not
-        broadcast directly to the consensus system. However, since each message in the Batch
-        Message file has a Hash, Social Identity, and signature, and the Batch Announcement
-        has a Hash of the Batch Message file, authenticity still traces from each individual
-        user message back to the chain, using techniques such as EIP -1271,\cite{eip1271}
-        BLS12-377,\cite{el2020} or other similar approaches.
+A Batch Announcement has a different Message Type than a Broadcast Announcement, but
+otherwise has the same structure. However, the URI for a Batch Announcement always
+refers to a Batch Message file, the content of which has a specific file format, and
+is an ordered list of other Announcements. Each of the included Announcements has
+its complete set of Announcement metadata, including Message Type, Social Identity
+source, content URI, content Hash, and any type-specific Metadata (for example, a
+Reply Announcement would also have a referent message ID).  Each Announcement also
+contains the Social Identity address of the sender and a signature of the URI
+content, replacing the signature that would have been used when posting to the
+consensus system. The Announcements included in the Batch Message file are not
+broadcast directly to the consensus system. However, since each message in the Batch
+Message file has a Hash, Social Identity, and signature, and the Batch Announcement
+has a Hash of the Batch Message file, authenticity still traces from each individual
+user message back to the chain, using techniques such as EIP -1271,\cite{eip1271}
+BLS12-377,\cite{el2020} or other similar approaches.
 
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figures/Example Batch Process.png}
-		\caption{Example Batch Process}
-		\label{fig:10}
-	\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{figures/Example Batch Process.png}
+	\caption{Example Batch Process}
+	\label{fig:10}
+\end{figure}
 
-	This approach has a number of trade-offs. Benefits include lower cost and better
-        scaling while maintaining authenticity. Drawbacks include increased complexity and
-        the off-chain nature of messages referenced by Batch Messages. Increased complexity
-        comes from the additional indirection used by Batch Messages. However, as volume
-        increases, most clients will use dedicated content indexing services, which should
-        have no issue with indexing Batch Messages. Potential latency comes from Batch
-        Announcers only periodically posting Batch Announcements. The off-ledger nature of
-        referenced messages can be mitigated by Indexers and other consensus system watchers
-        replicating or caching Batch Message files.  While a file can be removed, the
-        existence of the Batch Message is listed on the chain, providing evidence that a
-        file previously existed and allowing any file copy to be verified for authenticity
-        against the listed Hash.
+This approach has a number of trade-offs. Benefits include lower cost and better
+scaling while maintaining authenticity. Drawbacks include increased complexity and
+the off-chain nature of messages referenced by Batch Messages. Increased complexity
+comes from the additional indirection used by Batch Messages. However, as volume
+increases, most clients will use dedicated content indexing services, which should
+have no issue with indexing Batch Messages. Potential latency comes from Batch
+Announcers only periodically posting Batch Announcements. The off-ledger nature of
+referenced messages can be mitigated by Indexers and other consensus system watchers
+replicating or caching Batch Message files.  While a file can be removed, the
+existence of the Batch Message is listed on the chain, providing evidence that a
+file previously existed and allowing any file copy to be verified for authenticity
+against the listed Hash.
 
-	Batch Messages are another example of the flexibility and extensibility of the
-        protocol, enabling implementation on cost-sensitive consensus systems including
-        sidechain or other Layer 2 blockchain solutions.  Users have the option to publish
-        Announcements directly or through an Announcement service. Batch Announcements work
-        in cooperation with, not as a replacement for, other Message Types, while providing
-        orders-of-magnitude scaling increases and cost reductions.
+Batch Messages are another example of the flexibility and extensibility of the
+protocol, enabling implementation on cost-sensitive consensus systems including
+sidechain or other Layer 2 blockchain solutions.  Users have the option to publish
+Announcements directly or through an Announcement service. Batch Announcements work
+in cooperation with, not as a replacement for, other Message Types, while providing
+orders-of-magnitude scaling increases and cost reductions.
 
 \section{Conclusion}\label{sec:conclusion}
 
@@ -898,7 +900,7 @@ protocol specification leveraging the significant technical work already complet
 
 Creating a complete system with so many components can be difficult when all functionality
 must occur inside a single organization. By unbundling the social network, an entire
-ecosystem can be created to operate at the scale of global social media and allow a diverse
+ecosystem can be created to operate at global scale and allow a diverse
 array of experts to address the pressing challenges created by malicious actors in the
 network. With a public broadcast model of protocol events, new services can be created to
 provide simple interfaces and data layers to create and consume data. These SaaS (Software
@@ -929,7 +931,7 @@ to interoperate directly.
 The protocol allows for the same underlying information to be available to everyone
 independent of intermediaries. Separating responsibilities encourages competition while
 better aligning incentives with user interest. The range of possibilities is difficult to
-predict, but by ensuring user data ownership and decentralizing the interaction model, the
+predict, but by ensuring user data control and decentralizing the interaction model, the
 protocol allows for an entire ecosystem of participants to innovate and flourish.
 
 \nocite{0xwhitepaper}
